@@ -15,35 +15,34 @@ app.get('/user-agent-info', async (req, res) => {
     const userAgent = req.get('User-Agent');
     const uaResult = parser.setUA(userAgent).getResult();
 
-    // Retrieve client IP address, accounting for proxies
-    let ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip;
-    console.log("Client IP:", ip);
-    ip = ip.split(',')[0].trim();
-    console.log("Initial IP:", ip);
+    let ip = request.headers['x-forwarded-for']?.split(',')[0].trim() || request.ip;
 
-    // Local testing check: fetch public IP if IP is localhost
-    if (ip === '::1' || ip === '127.0.0.1') {
+    if (!ip || ip === '::1' || ip === '127.0.0.1') {
         try {
-            const fetch = await fetchFetch();
             const response = await fetch('https://api.ipify.org?format=json');
             const data = await response.json();
             ip = data.ip;
-            console.log("Fetched Public IP:", ip);
+            console.log("Fetched IP:", ip);
         } catch (error) {
-            return res.status(500).json({ error: 'Could not retrieve public IP' });
+            console.error('Could not retrieve public IP:', error);
+            return { error: 'IP retrieval failed' };
         }
     }
 
-    // Fetch location data from ipinfo.io
     let locationData = {};
-    try {
-        const fetch = await fetchFetch();
-        const locationResponse = await fetch(`https://ipinfo.io/${ip}?token=${IPINFO_API_KEY}`);
-        locationData = await locationResponse.json();
-        console.log("locationData", locationData);
-    } catch (error) {
-        console.error('Error fetching location data:', error);
+
+    if (ip) {
+        try {
+            const locationResponse = await fetch(`https://ipinfo.io/${ip}?token=${IPINFO_API_KEY}`);
+            locationData = await locationResponse.json();
+            console.log("Location data:", locationData);
+        } catch (error) {
+            console.error('Error fetching location data:', error);
+        }
+    } else {
+        console.error('No valid IP available for location lookup');
     }
+
 
     res.json({
         ip,
