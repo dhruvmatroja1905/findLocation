@@ -17,6 +17,7 @@ app.get('/user-agent-info', async (req, res) => {
 
     // Retrieve client IP address, accounting for proxies
     let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    ip = ip.split(',')[0].trim();
     console.log("Initial IP:", ip);
 
     // Local testing check: fetch public IP if IP is localhost
