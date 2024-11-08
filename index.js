@@ -19,11 +19,12 @@ app.get('/user-agent-info', async (req, res) => {
 console.log("requestIp", requestIp)
 
     let ip = req.headers['x-forwarded-for'];
+    ip = ip.split(',')[0].trim();
     console.log("ippppppp", ip)
 
     if (!ip || ip === '::1' || ip === '127.0.0.1') {
         try {
-            const response = await fetch('https://api.ipify.org?format=json');
+            const response = await fetchFetch('https://api.ipify.org?format=json');
             const data = await response.json();
             ip = data.ip;
             console.log("Fetched IP:", ip);
@@ -37,7 +38,7 @@ console.log("requestIp", requestIp)
 
     if (ip) {
         try {
-            const locationResponse = await fetch(`https://ipinfo.io/${ip}?token=${IPINFO_API_KEY}`);
+            const locationResponse = await fetchFetch(`https://ipinfo.io/${ip}?token=${IPINFO_API_KEY}`);
             locationData = await locationResponse.json();
             console.log("Location data:", locationData);
         } catch (error) {
