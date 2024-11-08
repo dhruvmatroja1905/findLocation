@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "",
@@ -15,5 +16,8 @@
     "express-useragent": "^1.0.15",
     "node-fetch": "^3.3.2",
     "ua-parser-js": "^2.0.0-rc.1"
+  },
+  "engines": {
+    "node": "18.x" 
   }
 }
