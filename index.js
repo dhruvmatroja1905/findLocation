@@ -15,7 +15,7 @@ app.get('/user-agent-info', async (req, res) => {
     const userAgent = req.get('User-Agent');
     const uaResult = parser.setUA(userAgent).getResult();
 
-    let ip = request.headers['x-forwarded-for']?.split(',')[0].trim() || request.ip;
+    let ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip;
 
     if (!ip || ip === '::1' || ip === '127.0.0.1') {
         try {
