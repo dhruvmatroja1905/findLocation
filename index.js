@@ -14,36 +14,42 @@ app.get('/user-agent-info', async (req, res) => {
     const requestIp = req.ip
 console.log("requestIp", requestIp)
 
-    let ip = req.headers['x-forwarded-for'];
-    console.log("all Ip", ip)
-    ip = ip.split(',')[0].trim();
-    console.log("ippppppp", ip)
+let ip = request.headers['x-forwarded-for'] || request.headers['cf-connecting-ip'] || request.headers['x-real-ip'] || request.ip;
+// let ip = req.ip
+console.log("ippppp", ip)
+ // ip = ip.split(',')[0].trim(); 
+// console.log("split IP", ip);
+if (ip && ip.includes(',')) {
+  ip = ip.split(',')[0].trim();
+}
+console.log("Processed IP:", ip);
 
-    if (!ip || ip === '::1' || ip === '127.0.0.1') {
-        try {
-            const response = await fetch('https://api.ipify.org?format=json');
-            const data = await response.json();
-            ip = data.ip;
-            console.log("Fetched IP:", ip);
-        } catch (error) {
-            console.error('Could not retrieve public IP:', error);
-            return { error: 'IP retrieval failed' };
-        }
+
+if (!ip || ip === '::1' || ip.startsWith('127.') || ip.startsWith('10.') || ip.startsWith('192.168') || ip.startsWith('172.16')) {
+  try {
+    const response = await fetch('https://api.ipify.org?format=json');
+    const data = await response.json();
+    ip = data.ip;
+    console.log("Fetched public IP:", ip);
+  } catch (error) {
+    console.error('Could not retrieve public IP:', error);
+    return { error: 'IP retrieval failed' };
+  }
+}
+
+  let locationData = {}; 
+
+  if (ip) {
+    try {
+        const locationResponse = await fetch(`https://ipinfo.io/${ip}?token=${IPINFO_API_KEY}`);
+        locationData = await locationResponse.json();
+        console.log("Location data:", locationData);
+    } catch (error) {
+        console.error('Error fetching location data:', error);
     }
-
-    let locationData = {};
-
-    if (ip) {
-        try {
-            const locationResponse = await fetch(`https://ipinfo.io/${ip}?token=${IPINFO_API_KEY}`);
-            locationData = await locationResponse.json();
-            console.log("Location data:", locationData);
-        } catch (error) {
-            console.error('Error fetching location data:', error);
-        }
-    } else {
-        console.error('No valid IP available for location lookup');
-    }
+  } else {
+    console.error('No valid IP available for location lookup');
+  }
 
 
     res.json({
