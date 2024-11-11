@@ -6,8 +6,8 @@ const app = express();
 const port = 5001;
 const IPINFO_API_KEY = '01e746c9df49ad';
 
-// // Note: Do NOT set trust proxy to true if you want the closest proxy's IP
-// app.set('trust proxy', true);
+
+app.set('trust proxy', true);
 
 app.use(function (req, res, next) {
     req.headers['x-real-ip'] = getUserIP(req);
