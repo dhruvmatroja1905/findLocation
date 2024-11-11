@@ -22,7 +22,8 @@ app.get('/user-agent-info', async (req, res) => {
     console.log("req.ip:", remoteIp);
   
     // Prioritize IP headers
-    let ip = xForwardedFor || cfConnectingIp || xRealIp || remoteIp;
+    let ip = req.socket.remoteAddress;
+    console.log("iPppp", ip)
   
     // Identify and log the header that provided the IP
     if (xForwardedFor) {
