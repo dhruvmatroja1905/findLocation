@@ -11,19 +11,35 @@ app.get('/user-agent-info', async (req, res) => {
     const userAgent = req.get('User-Agent');
     const uaResult = parser.setUA(userAgent).getResult();
 
-    const requestIp = req.ip
-console.log("requestIp", requestIp)
-
-let ip = request.headers['x-forwarded-for'] || request.headers['cf-connecting-ip'] || request.headers['x-real-ip'] || request.ip;
-// let ip = req.ip
-console.log("ippppp", ip)
- // ip = ip.split(',')[0].trim(); 
-// console.log("split IP", ip);
-if (ip && ip.includes(',')) {
-  ip = ip.split(',')[0].trim();
-}
-console.log("Processed IP:", ip);
-
+    const xForwardedFor = request.headers['x-forwarded-for'];
+    const cfConnectingIp = request.headers['cf-connecting-ip'];
+    const xRealIp = request.headers['x-real-ip'];
+    const remoteIp = request.ip;
+  
+    console.log("x-forwarded-for:", xForwardedFor);
+    console.log("cf-connecting-ip:", cfConnectingIp);
+    console.log("x-real-ip:", xRealIp);
+    console.log("req.ip:", remoteIp);
+  
+    // Prioritize IP headers
+    let ip = xForwardedFor || cfConnectingIp || xRealIp || remoteIp;
+  
+    // Identify and log the header that provided the IP
+    if (xForwardedFor) {
+      console.log("Public IP obtained from 'x-forwarded-for' header:", xForwardedFor);
+    } else if (cfConnectingIp) {
+      console.log("Public IP obtained from 'cf-connecting-ip' header:", cfConnectingIp);
+    } else if (xRealIp) {
+      console.log("Public IP obtained from 'x-real-ip' header:", xRealIp);
+    } else {
+      console.log("Public IP obtained from 'req.ip':", remoteIp);
+    }
+  
+    // Process the IP if it's in a comma-separated list (e.g., x-forwarded-for)
+    if (ip && ip.includes(',')) {
+      ip = ip.split(',')[0].trim();
+    }
+    console.log("Processed IP:", ip);
 
 if (!ip || ip === '::1' || ip.startsWith('127.') || ip.startsWith('10.') || ip.startsWith('192.168') || ip.startsWith('172.16')) {
   try {
