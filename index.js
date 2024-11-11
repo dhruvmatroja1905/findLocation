@@ -33,7 +33,7 @@ app.get('/user-agent-info', async (req, res) => {
     const userAgent = req.get('User-Agent');
     const uaResult = parser.setUA(userAgent).getResult();
 
-    let ip = request.headers['x-real-ip']
+    let ip = req.headers['x-real-ip']
     // let ip = req.ip
     console.log("ip", ip)
     
