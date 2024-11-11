@@ -7,9 +7,8 @@ const port = 5001;
 const IPINFO_API_KEY = '01e746c9df49ad';
 
 // Note: Do NOT set trust proxy to true if you want the closest proxy's IP
-
+app.set('trust proxy', true);
 app.use(function (req, res, next) {
-    // Only get the direct IP, disregarding forwarded headers
     req.headers['x-real-ip'] = req.socket.remoteAddress;
     next();
 });
@@ -22,7 +21,7 @@ app.get('/user-agent-info', async (req, res) => {
     let ip = req.headers['x-real-ip']; // Uses closest proxy's IP
     console.log("Direct IP without proxies:", ip);
 
-    if (!ip || ip === '::1' || ip.startsWith('10.') || ip.startsWith('192.168')) {
+    if (!ip  || ip.startsWith('10.') || ip.startsWith('192.168')) {
         try {
             const response = await fetch('https://api.ipify.org?format=json');
             const data = await response.json();
