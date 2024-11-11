@@ -11,10 +11,10 @@ app.get('/user-agent-info', async (req, res) => {
     const userAgent = req.get('User-Agent');
     const uaResult = parser.setUA(userAgent).getResult();
 
-    const xForwardedFor = request.headers['x-forwarded-for'];
-    const cfConnectingIp = request.headers['cf-connecting-ip'];
-    const xRealIp = request.headers['x-real-ip'];
-    const remoteIp = request.ip;
+    const xForwardedFor = req.headers['x-forwarded-for'];
+    const cfConnectingIp = req.headers['cf-connecting-ip'];
+    const xRealIp = req.headers['x-real-ip'];
+    const remoteIp = req.ip;
   
     console.log("x-forwarded-for:", xForwardedFor);
     console.log("cf-connecting-ip:", cfConnectingIp);
